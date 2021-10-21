@@ -7,10 +7,11 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
     companion object{
-        val TAG = "LoginActivity"
+        val TAG = "LoginScreen"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,11 +20,7 @@ class LoginActivity : AppCompatActivity() {
 
         val buttonLogin = findViewById<Button>(R.id.loginButtonLogin)
         buttonLogin.setOnClickListener {
-            val email = findViewById<EditText>(R.id.emailEditTextLogin).text.toString()
-            val password = findViewById<EditText>(R.id.passwordEditTextLogin).text.toString()
-
-            Log.d(TAG, "Email: $email")
-            Log.d(TAG, "Password: $password")
+            performLogin()
         }
 
         val registerNewAccount = findViewById<TextView>(R.id.registerNewAccountTextView)
@@ -31,5 +28,31 @@ class LoginActivity : AppCompatActivity() {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    private fun performLogin() {
+        val email = findViewById<EditText>(R.id.emailEditTextLogin).text.toString()
+        val password = findViewById<EditText>(R.id.passwordEditTextLogin).text.toString()
+
+        if(email.isEmpty() || password.isEmpty()){
+            val msg = "Please enter text in email/password"
+            BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
+            return
+        }
+
+        Log.d(TAG, "Email: $email")
+        Log.d(TAG, "Password: $password")
+
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if(!it.isSuccessful) return@addOnCompleteListener
+
+                Log.d(TAG, "Successfully logged user with uid: ${it.result?.user?.uid}")
+            }
+            .addOnFailureListener {
+                val msg = "Failed to authenticate user:\n\n${it.message}"
+                BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
+                Log.d(TAG, msg)
+            }
     }
 }
