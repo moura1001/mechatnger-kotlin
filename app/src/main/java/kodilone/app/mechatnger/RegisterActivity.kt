@@ -1,16 +1,29 @@
 package kodilone.app.mechatnger
 
+import android.app.Activity
+import android.content.Intent
+import android.graphics.ImageDecoder
+import android.graphics.drawable.BitmapDrawable
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterActivity : AppCompatActivity() {
     companion object{
         val TAG = "RegisterScreen"
+    }
+
+    private val selectPhotoActivity = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result ->
+        onActivityResult(result)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,6 +38,11 @@ class RegisterActivity : AppCompatActivity() {
         val alreadyHaveAccount = findViewById<TextView>(R.id.alreadyHaveAccountTextView)
         alreadyHaveAccount.setOnClickListener {
             finish()
+        }
+
+        val selectPhotoButton = findViewById<Button>(R.id.selectPhotoButtonRegister)
+        selectPhotoButton.setOnClickListener {
+            performSelectPhoto()
         }
     }
 
@@ -54,5 +72,36 @@ class RegisterActivity : AppCompatActivity() {
                 BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
                 Log.d(TAG, msg)
             }
+    }
+
+    private fun performSelectPhoto(){
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/*"
+
+        selectPhotoActivity.launch(intent)
+    }
+
+    private fun onActivityResult(result: ActivityResult){
+        if(result.resultCode == Activity.RESULT_OK && result.data != null){
+            Log.d(TAG, "Photo was selected")
+
+            val selectPhotoButton = findViewById<Button>(R.id.selectPhotoButtonRegister)
+
+            val uri = result.data!!.data
+
+            try {
+                val bitmap = if(Build.VERSION.SDK_INT < 28) {
+                                MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                            }else{
+                                val source = ImageDecoder.createSource(contentResolver, uri!!)
+                                ImageDecoder.decodeBitmap(source)
+                            }
+
+                val bitmapDrawable = BitmapDrawable(resources, bitmap)
+                selectPhotoButton.background = bitmapDrawable
+            }catch (e:Throwable){
+                Log.d(TAG,"$e")
+            }
+        }
     }
 }
