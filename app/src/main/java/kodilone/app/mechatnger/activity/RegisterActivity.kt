@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -155,8 +156,14 @@ class RegisterActivity : AppCompatActivity() {
                                 ImageDecoder.decodeBitmap(source)
                             }
 
-                val bitmapDrawable = BitmapDrawable(resources, bitmap)
-                selectPhotoButton.background = bitmapDrawable
+                //val bitmapDrawable = BitmapDrawable(resources, bitmap)
+                //selectPhotoButton.background = bitmapDrawable
+
+                val circleImageView = findViewById<ImageView>(R.id.selectPhotoImageViewRegister)
+                circleImageView.setImageBitmap(bitmap)
+
+                selectPhotoButton.alpha = 0f
+
             }catch (e:Throwable){
                 Log.d(TAG,"$e")
             }

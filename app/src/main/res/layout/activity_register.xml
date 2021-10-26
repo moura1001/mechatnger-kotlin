@@ -19,6 +19,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/selectPhotoImageViewRegister"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:layout_constraintBottom_toBottomOf="@+id/selectPhotoButtonRegister"
+        app:layout_constraintEnd_toEndOf="@+id/selectPhotoButtonRegister"
+        app:layout_constraintStart_toStartOf="@+id/selectPhotoButtonRegister"
+        app:layout_constraintTop_toTopOf="@+id/selectPhotoButtonRegister"
+        app:civ_border_width="4dp" />
+
     <EditText
         android:id="@+id/usernameEditTextRegister"
         android:layout_width="0dp"
