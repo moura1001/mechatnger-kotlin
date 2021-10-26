@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,6 +16,8 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
     companion object{
@@ -25,6 +28,8 @@ class RegisterActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()) { result ->
         onActivityResult(result)
     }
+
+    private var selectedPhotoUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +71,34 @@ class RegisterActivity : AppCompatActivity() {
                 if(!it.isSuccessful) return@addOnCompleteListener
 
                 Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
+
+                uploadImageToFirebaseStorage()
             }
             .addOnFailureListener {
                 val msg = "Failed to create user:\n\n${it.message}"
                 BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
                 Log.d(TAG, msg)
             }
+    }
+
+    private fun uploadImageToFirebaseStorage(){
+        if(selectedPhotoUri != null){
+            val fileName = UUID.randomUUID().toString()
+            val ref = FirebaseStorage.getInstance().getReference("/images/$fileName")
+            ref.putFile(selectedPhotoUri!!)
+                .addOnSuccessListener {
+                    Log.d(TAG, "Successfully uploaded image: ${it.metadata?.path}")
+
+                    ref.downloadUrl.addOnSuccessListener {
+                        Log.d(TAG, "File location: $it")
+                    }
+                }
+                .addOnFailureListener {
+                    val msg = "Failed to upload image:\n\n${it.message}"
+                    BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
+                    Log.d(TAG, msg)
+                }
+        }
     }
 
     private fun performSelectPhoto(){
@@ -87,13 +114,13 @@ class RegisterActivity : AppCompatActivity() {
 
             val selectPhotoButton = findViewById<Button>(R.id.selectPhotoButtonRegister)
 
-            val uri = result.data!!.data
+            selectedPhotoUri = result.data!!.data
 
             try {
                 val bitmap = if(Build.VERSION.SDK_INT < 28) {
-                                MediaStore.Images.Media.getBitmap(contentResolver, uri)
+                                MediaStore.Images.Media.getBitmap(contentResolver, selectedPhotoUri)
                             }else{
-                                val source = ImageDecoder.createSource(contentResolver, uri!!)
+                                val source = ImageDecoder.createSource(contentResolver, selectedPhotoUri!!)
                                 ImageDecoder.decodeBitmap(source)
                             }
 
