@@ -1,4 +1,4 @@
-package kodilone.app.mechatnger
+package kodilone.app.mechatnger.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -16,7 +16,11 @@ import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kodilone.app.mechatnger.R
+import kodilone.app.mechatnger.model.User
+import kodilone.app.mechatnger.utils.BoxAlertDialog
 import java.util.*
 
 class RegisterActivity : AppCompatActivity() {
@@ -30,6 +34,10 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private var selectedPhotoUri: Uri? = null
+
+    private var registeredUserUid: String? = null
+    private var registeredUserName: String? = null
+    private var registeredUserUrl: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +64,7 @@ class RegisterActivity : AppCompatActivity() {
         val email = findViewById<EditText>(R.id.emailEditTextRegister).text.toString()
         val password = findViewById<EditText>(R.id.passwordEditTextRegister).text.toString()
 
-        if(email.isEmpty() || password.isEmpty()){
+        if(username.isEmpty() || email.isEmpty() || password.isEmpty()){
             val msg = "Please enter text in username/email/password"
             BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
             return
@@ -69,6 +77,9 @@ class RegisterActivity : AppCompatActivity() {
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if(!it.isSuccessful) return@addOnCompleteListener
+
+                registeredUserUid = it.result?.user?.uid
+                registeredUserName = username
 
                 Log.d(TAG, "Successfully created user with uid: ${it.result?.user?.uid}")
 
@@ -91,6 +102,10 @@ class RegisterActivity : AppCompatActivity() {
 
                     ref.downloadUrl.addOnSuccessListener {
                         Log.d(TAG, "File location: $it")
+
+                        registeredUserUrl = it.toString()
+
+                        saveUserToFirebaseRealtimeDatabase()
                     }
                 }
                 .addOnFailureListener {
@@ -99,6 +114,22 @@ class RegisterActivity : AppCompatActivity() {
                     Log.d(TAG, msg)
                 }
         }
+    }
+
+    private fun saveUserToFirebaseRealtimeDatabase(){
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$registeredUserUid")
+
+        val user = User(registeredUserUid!!, registeredUserName!!, registeredUserUrl!!)
+
+        ref.setValue(user)
+            .addOnSuccessListener {
+                Log.d(TAG, "Saved user to Firebase Realtime Database")
+            }
+            .addOnFailureListener {
+                val msg = "Failed to create user:\n\n${it.message}"
+                BoxAlertDialog(msg).show(supportFragmentManager, "ERROR_ALERT_DIALOG")
+                Log.d(TAG, msg)
+            }
     }
 
     private fun performSelectPhoto(){

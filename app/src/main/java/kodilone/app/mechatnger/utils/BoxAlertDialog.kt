@@ -1,4 +1,4 @@
-package kodilone.app.mechatnger
+package kodilone.app.mechatnger.utils
 
 import android.app.AlertDialog
 import android.app.Dialog

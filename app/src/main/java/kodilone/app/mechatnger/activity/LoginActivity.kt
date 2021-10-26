@@ -1,4 +1,4 @@
-package kodilone.app.mechatnger
+package kodilone.app.mechatnger.activity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +8,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import kodilone.app.mechatnger.R
+import kodilone.app.mechatnger.utils.BoxAlertDialog
 
 class LoginActivity : AppCompatActivity() {
     companion object{
