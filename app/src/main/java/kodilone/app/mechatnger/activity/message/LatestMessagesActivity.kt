@@ -1,4 +1,4 @@
-package kodilone.app.mechatnger.activity
+package kodilone.app.mechatnger.activity.message
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import kodilone.app.mechatnger.R
+import kodilone.app.mechatnger.activity.entry.LoginActivity
 
 class LatestMessagesActivity : AppCompatActivity() {
     companion object{
@@ -20,6 +21,12 @@ class LatestMessagesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_latest_messages)
 
         verifyUserIsLoggedIn()
+
+        val chat = findViewById<TextView>(R.id.chatTextView)
+        chat.setOnClickListener {
+            val intent = Intent(this, ChatLogActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun verifyUserIsLoggedIn(){

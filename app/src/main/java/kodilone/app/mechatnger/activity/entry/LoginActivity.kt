@@ -1,4 +1,4 @@
-package kodilone.app.mechatnger.activity
+package kodilone.app.mechatnger.activity.entry
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
 import kodilone.app.mechatnger.R
+import kodilone.app.mechatnger.activity.message.LatestMessagesActivity
 import kodilone.app.mechatnger.utils.BoxAlertDialog
 
 class LoginActivity : AppCompatActivity() {

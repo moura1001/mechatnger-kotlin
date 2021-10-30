@@ -1,9 +1,8 @@
-package kodilone.app.mechatnger.activity
+package kodilone.app.mechatnger.activity.entry
 
 import android.app.Activity
 import android.content.Intent
 import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import kodilone.app.mechatnger.R
+import kodilone.app.mechatnger.activity.message.LatestMessagesActivity
 import kodilone.app.mechatnger.model.User
 import kodilone.app.mechatnger.utils.BoxAlertDialog
 import java.util.*

@@ -10,16 +10,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Mechatnger">
         <activity
-            android:name=".activity.LatestMessagesActivity"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".activity.message.ChatLogActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.message.LatestMessagesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.message.LatestMessagesActivity" />
         </activity>
         <activity
-            android:name=".activity.LoginActivity"
+            android:name=".activity.message.LatestMessagesActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,8 +27,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.RegisterActivity"
-            android:exported="true"></activity>
+            android:name=".activity.entry.LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activity.entry.RegisterActivity"
+            android:exported="true" />
     </application>
 
 </manifest>
