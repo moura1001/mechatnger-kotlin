@@ -8,12 +8,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kodilone.app.mechatnger.R
 import kodilone.app.mechatnger.activity.entry.LoginActivity
+import kodilone.app.mechatnger.model.User
 
 class LatestMessagesActivity : AppCompatActivity() {
     companion object{
         val TAG = "LatestMessagesScreen"
+        var USER: User? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +44,12 @@ class LatestMessagesActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
+        } else{
+            FirebaseDatabase.getInstance().getReference("/users/$uid").get()
+                .addOnCompleteListener {
+                    USER = it.result?.getValue(User::class.java)
+                }
+                .addOnFailureListener {  }
         }
     }
 

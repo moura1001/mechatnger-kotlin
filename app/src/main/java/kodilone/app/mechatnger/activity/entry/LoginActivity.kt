@@ -8,8 +8,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import kodilone.app.mechatnger.R
 import kodilone.app.mechatnger.activity.message.LatestMessagesActivity
+import kodilone.app.mechatnger.model.User
 import kodilone.app.mechatnger.utils.BoxAlertDialog
 
 class LoginActivity : AppCompatActivity() {
@@ -50,11 +55,18 @@ class LoginActivity : AppCompatActivity() {
             .addOnCompleteListener {
                 if(!it.isSuccessful) return@addOnCompleteListener
 
-                Log.d(TAG, "Successfully logged user with uid: ${it.result?.user?.uid}")
+                val uid = it.result?.user?.uid
 
-                val intent = Intent(this, LatestMessagesActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                startActivity(intent)
+                Log.d(TAG, "Successfully logged user with uid: $uid")
+
+                FirebaseDatabase.getInstance().getReference("/users/$uid").get()
+                    .addOnCompleteListener {
+                        val user = it.result?.getValue(User::class.java)
+                        val intent = Intent(this, LatestMessagesActivity::class.java)
+                        intent.putExtra("USER_KEY", user)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(intent)
+                    }
             }
             .addOnFailureListener {
                 val msg = "Failed to authenticate user:\n\n${it.message}"

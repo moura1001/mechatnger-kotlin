@@ -128,6 +128,7 @@ class RegisterActivity : AppCompatActivity() {
 
                 val intent = Intent(this, LatestMessagesActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.putExtra("USER_KEY", user)
                 startActivity(intent)
             }
             .addOnFailureListener {
