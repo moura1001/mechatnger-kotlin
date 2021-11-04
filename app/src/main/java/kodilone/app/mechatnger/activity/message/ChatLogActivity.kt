@@ -12,7 +12,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import kodilone.app.mechatnger.R
 import kodilone.app.mechatnger.model.ChatMessage
-import kotlin.random.Random
 
 class ChatLogActivity : AppCompatActivity() {
     companion object{
@@ -44,7 +43,7 @@ class ChatLogActivity : AppCompatActivity() {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val chatMessage = snapshot.getValue(ChatMessage::class.java)
                 Log.d(TAG, chatMessage?.text!!)
-                if(chatMessage.fromId == LatestMessagesActivity.USER!!.uid){
+                if(chatMessage.fromId == LatestMessagesActivity.currentUser!!.uid){
                     chatMessage.type = ChatMessage.MessageType.RIGHT
                 } else{
                     chatMessage.type = ChatMessage.MessageType.LEFT
@@ -78,7 +77,7 @@ class ChatLogActivity : AppCompatActivity() {
 
     private fun performSendMessage(){
         val text = findViewById<EditText>(R.id.editTextChatLog).text.toString()
-        val fromId = LatestMessagesActivity.USER?.uid!!
+        val fromId = LatestMessagesActivity.currentUser?.uid!!
 
         val ref = FirebaseDatabase.getInstance().getReference("/messages").push()
 

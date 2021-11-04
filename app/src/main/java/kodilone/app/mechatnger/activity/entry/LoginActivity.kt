@@ -58,15 +58,6 @@ class LoginActivity : AppCompatActivity() {
                 val uid = it.result?.user?.uid
 
                 Log.d(TAG, "Successfully logged user with uid: $uid")
-
-                FirebaseDatabase.getInstance().getReference("/users/$uid").get()
-                    .addOnCompleteListener {
-                        val user = it.result?.getValue(User::class.java)
-                        val intent = Intent(this, LatestMessagesActivity::class.java)
-                        intent.putExtra("USER_KEY", user)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(intent)
-                    }
             }
             .addOnFailureListener {
                 val msg = "Failed to authenticate user:\n\n${it.message}"

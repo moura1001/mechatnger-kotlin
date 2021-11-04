@@ -19,7 +19,7 @@ import kodilone.app.mechatnger.model.User
 class LatestMessagesActivity : AppCompatActivity() {
     companion object{
         val TAG = "LatestMessagesScreen"
-        var USER: User? = null
+        var currentUser: User? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +27,8 @@ class LatestMessagesActivity : AppCompatActivity() {
         setContentView(R.layout.activity_latest_messages)
 
         verifyUserIsLoggedIn()
+
+        fetchCurrentUser()
 
         val chat = findViewById<TextView>(R.id.chatTextView)
         chat.setOnClickListener {
@@ -44,13 +46,23 @@ class LatestMessagesActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
-        } else{
-            FirebaseDatabase.getInstance().getReference("/users/$uid").get()
-                .addOnCompleteListener {
-                    USER = it.result?.getValue(User::class.java)
-                }
-                .addOnFailureListener {  }
         }
+    }
+
+    private fun fetchCurrentUser(){
+        val uid = FirebaseAuth.getInstance().uid
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+        ref.addListenerForSingleValueEvent(object: ValueEventListener{
+            override fun onDataChange(snapshot: DataSnapshot) {
+                currentUser = snapshot.getValue(User::class.java)
+                Log.d(TAG, "Current user: ${currentUser?.userName}")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
