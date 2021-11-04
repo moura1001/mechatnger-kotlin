@@ -5,10 +5,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import kodilone.app.mechatnger.R
-import kodilone.app.mechatnger.model.User
+import kodilone.app.mechatnger.model.ChatMessage
 
 class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    private var messageList: List<String>? = null
+    private var messageList: MutableList<ChatMessage>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when(viewType){
@@ -48,8 +48,9 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         return messageList!!.size
     }
 
-    fun setMessages(messageList: List<String>?) {
+    fun setMessages(messageList: MutableList<ChatMessage>?) {
         this.messageList = messageList
+        notifyDataSetChanged()
     }
 
     class ChatToItem internal constructor(view: View) : RecyclerView.ViewHolder(view) {}
