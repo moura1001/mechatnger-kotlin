@@ -20,7 +20,6 @@ class ChatLogActivity : AppCompatActivity() {
 
     var recyclerViewChatLog: RecyclerView? = null
     var messageAdapter = MessageAdapter()
-    var messageList: MutableList<ChatMessage>? = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +30,39 @@ class ChatLogActivity : AppCompatActivity() {
         recyclerViewChatLog = findViewById(R.id.recyclerViewChatLog)
 
         recyclerViewChatLog!!.setAdapter(messageAdapter)
-        messageAdapter.setMessages(messageList)
+        listenForMessages()
 
         findViewById<Button>(R.id.sendButtonChatLog).setOnClickListener {
             performSendMessage()
         }
+    }
+
+    private fun listenForMessages(){
+        val ref = FirebaseDatabase.getInstance().getReference("/messages")
+        ref.addChildEventListener(object: ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+                val chatMessage = snapshot.getValue(ChatMessage::class.java)
+                Log.d(TAG, chatMessage?.text!!)
+                messageAdapter.addMessage(chatMessage)
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildRemoved(snapshot: DataSnapshot) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
     private fun performSendMessage(){
@@ -49,8 +76,6 @@ class ChatLogActivity : AppCompatActivity() {
         ref.setValue(chatmessage)
             .addOnSuccessListener {
                 Log.d(TAG, "Saved our chat message: ${ref.key}")
-                messageList!!.add(chatmessage)
-                messageAdapter.setMessages(messageList)
             }
     }
 }
